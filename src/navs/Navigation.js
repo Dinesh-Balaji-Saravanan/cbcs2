@@ -60,6 +60,11 @@ class Navigation extends React.Component{
                     </div>
                     </div>
                 </nav>
+                <footer className="bg-dark text-white fixed-bottom">
+                    <div className="container" style={{padding: '2px'}} align="center">
+                        <small>Developed by <Link to="/about">MCA</Link> | © Copyright 2018 @ KEC</small>
+                    </div>
+                </footer>
             </div>
         );
     }

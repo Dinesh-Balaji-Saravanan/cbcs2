@@ -28,6 +28,7 @@ import DepStudentList from "./dashboard/department/student_list/student-list";
 import DepartManager from "./dashboard/department_manager";
 import ChangePassword from "./signup/change_pass";
 import SetSecurityQuest from "./signup/set_security";
+import About from "./about";
 
 const stores = createStore(
     rootReducer,
@@ -58,6 +59,7 @@ ReactDOM.render(<BrowserRouter >
                 <Route path='/dashboard/department' component={DepartManager}/>
                 <Route path='/department_portal/report' component={DepReport}/>
                 <Route exact path={"/forgot"} component={ForgotPassword}/>
+                <Route exact path={"/about"} component={About}/>
             </div>
         </div>
     </Provider>
