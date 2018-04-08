@@ -1,0 +1,43 @@
+{
+  "name": "cbcs",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@fortawesome/fontawesome": "^1.1.3",
+    "@fortawesome/fontawesome-free-solid": "^5.0.6",
+    "@fortawesome/react-fontawesome": "0.0.17",
+    "bootstrap": "^4.0.0",
+    "datatables.net": "^1.10.16",
+    "dns": "file:./src/dns",
+    "express": "^4.16.3",
+    "jquery": "^3.3.1",
+    "json2xls": "^0.1.2",
+    "msnodesqlv8": "^0.4.14",
+    "mssql": "^4.1.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-loading": "^1.0.4",
+    "react-redux": "^5.0.7",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "1.1.1",
+    "react-topbar-progress-indicator": "^2.0.0",
+    "redux": "^3.7.2",
+    "redux-devtools-extension": "^2.13.2",
+    "redux-thunk": "^2.2.0",
+    "tedious": "^2.3.1",
+    "xlsx": "^0.12.6"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "production": "node server.js",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "proxy": {
+    "/api": {
+      "target": "http://localhost:5000",
+      "changeOrigin": true
+    }
+  }
+}
