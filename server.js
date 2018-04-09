@@ -2,11 +2,13 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require('path');
+const http = require('http');
 const sql = require("mssql");
 const app = express();
 
 app.use(express.static(path.join(__dirname, 'build')));
 
+let httpServer = http.createServer(app);
 
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, 'build', 'index.html'));
@@ -24,7 +26,7 @@ app.use(function (req, res, next) {
 });
 
 //Setting up server
-const server = app.listen(process.env.PORT || 5000, function () {
+const server = httpServer.listen(process.env.PORT || 5000, function () {
     const port = server.address().port;
     console.log("App now running on port", port);
 });
@@ -44,11 +46,24 @@ const config = {
 //Function to connect to database and execute query
 const executeQuery = async function(res, query){
     try{
-        let pool = await sql.connect(config);
-        let result1 = await pool.request()
-            .query(query);
-        sql.close();
-        res.send(result1.recordset);
+        new sql.ConnectionPool(config).connect().then(pool => {
+            return pool.request().query(query)
+        }).then(result => {
+            let rows = result.recordset;
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.status(200).send(rows);
+            sql.close();
+        }).catch(err => {
+            res.status(500).send({ message: `${err}`});
+            sql.close();
+        });
+        //
+        // let pool = await sql.connect(config);
+        // let result1 = await pool.request()
+        //     .query(query);
+        // pool.close();
+        // sql.close();
+        // res.send(result1.recordset);
     }catch (e){
         console.log(e);
     }
