@@ -10,9 +10,14 @@ app.use(express.static(path.join(__dirname, 'build')));
 
 let httpServer = http.createServer(app);
 
-app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
+// app.get("/api/*",function (req, res) {
+//
+// });
+//
+// if(!app.get("/api/*") && !app.post("/api/*")){
+//
+// }
+
 
 // Setting Base directory
 app.use(bodyParser.json());
@@ -565,4 +570,8 @@ app.post("/api/chosenByStud", function(req , res){
     console.log(JSON.stringify(req.body));
     console.log(query);
     executeQuery (res, query);
+});
+
+app.get('/*', function (req, res) {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
