@@ -48,7 +48,6 @@ class GroupCourses extends React.Component {
         if (this.state.comb_name.length !== 0 && Array.from(this.selectedCheckboxes1).length !== 0) {
 
             this.myCall('insert_combination');
-            window.location.reload();
         } else {
             this.setState({
                 errors:{
@@ -64,10 +63,8 @@ class GroupCourses extends React.Component {
         e.preventDefault();
         if(e.target.name === 'update'){
             this.myCall2(e.target.name);
-            window.location.reload();
         }else if(e.target.name === 'delete'){
             this.myCall2(e.target.name);
-            window.location.reload();
         }else if(e.target.name === 'ok'){
             this.myCall2(e.target.name);
         }
@@ -90,24 +87,10 @@ class GroupCourses extends React.Component {
             try {
                 await response.json();
                 this.setState({isLoading: false});
+                window.location.reload();
             } catch (e) {
                 this.setState({groupings:[]});
                 this.setState({isLoading: false});
-                console.log("FAILED");
-            }
-            const response2 = await fetch(`/api/all_combinations`, {
-                headers : {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                }
-            }).catch( (err) =>{
-                console.log(err.message);
-            });
-
-            try {
-                const data = await response2.json();
-                this.setState({combinations:data});
-            } catch (e) {
                 console.log("FAILED");
             }
 
@@ -251,7 +234,7 @@ class GroupCourses extends React.Component {
                         icon:faExclamationTriangle
                     }
                 });
-
+                window.location.reload();
                 this.setState({groupings:[]});
                 this.setState({isLoading:false});
             } catch (e) {
@@ -362,7 +345,7 @@ class GroupCourses extends React.Component {
                                         </div>
                                         <hr/>
                                     </form>
-                                    <h4  className="card-title text-center">Combinations</h4>
+                                    <h4  className="card-title text-center">Groupings</h4>
                                     <form>
                                         <div className={'row justify-content-md-center'} align="center">
                                             <div className={"col-3"}>

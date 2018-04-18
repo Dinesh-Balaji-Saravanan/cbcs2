@@ -6,6 +6,7 @@ import DashCont from "./dash_content";
 class DepartmentDashboard extends React.Component {
 
     async componentWillMount(){
+        sessionStorage.setItem('report','');
         const response = await fetch(`/api/dep_login`, {
             headers: {
                 'Content-Type': 'application/json',

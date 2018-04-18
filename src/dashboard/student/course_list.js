@@ -1,8 +1,6 @@
 import React from 'react';
 import MediaListCourse from "./media_list";
 import Loader from "../loader/loader";
-import {faShoppingBag} from "@fortawesome/fontawesome-free-solid/index.es";
-import FontAwesomeIcon from "@fortawesome/react-fontawesome";
 import Redirect from "react-router-dom/es/Redirect";
 import ModalContent from "./modal_content";
 import ReactLoading from 'react-loading';
@@ -42,11 +40,19 @@ class CourseList extends React.Component {
         this.setState({selected:[]});
         this.setState({selectedId:[]});
         sessionStorage.setItem('status','');
+        this.selectedCourses.clear();
+        this.selectedCoursesId.clear();
+        localStorage.setItem('selected',null);
+        window.localStorage.removeItem('selected');
+        window.sessionStorage.removeItem('staff_id');
+        localStorage.clear();
+        this.setState({redirect:true});
     };
 
     setNull = (e)=>{
         this.setState({selected:[]});
         this.setState({selectedId:[]});
+        localStorage.setItem('selected',null);
         window.localStorage.removeItem('selected');
         window.sessionStorage.removeItem('staff_id');
     };
@@ -54,7 +60,15 @@ class CourseList extends React.Component {
     async myFunc(){
         sessionStorage.setItem('status','');
         this.setState({isLoading: true});
-        await fetch(`/api/everyThings_done`, {
+        let values = {
+            username:sessionStorage.getItem('user'),
+            course_id:Array.from(this.selectedCoursesId),
+            grp_name:this.state.data.grp_name,
+            type:this.state.data.type,
+            dep_id:this.state.student_details.dep_id,
+            staff_id:sessionStorage.getItem('staff_id')
+        };
+        const response_check = await fetch(`/api/check_maximum`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
@@ -63,31 +77,48 @@ class CourseList extends React.Component {
             body:JSON.stringify({
                 username:sessionStorage.getItem('user'),
                 course_id:Array.from(this.selectedCoursesId),
-                grp_name:this.state.data.grp_name,
-                type:this.state.data.type,
                 dep_id:this.state.student_details.dep_id,
-                staff_id:sessionStorage.getItem('staff_id')
+                grp_name:this.state.data.grp_name,
             })
         }).catch((err) => {
             console.log(err.message);
         });
 
         try {
-            localStorage.setItem('CourseToLoad','');
-            localStorage.setItem('course',null);
-            localStorage.setItem('selected',null);
-            this.selectedCourses.clear();
-            this.selectedCoursesId.clear();
-            this.setState({redirect:true});
+            const data_check = await response_check.json();
+            if(data_check.length !== 0){
+                await fetch(`/api/everyThings_done`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    method:"post",
+                    body:JSON.stringify(values)
+                }).catch((err) => {
+                    console.log(err.message);
+                });
+
+                try {
+                    localStorage.setItem('CourseToLoad','');
+                    localStorage.setItem('course',null);
+                    localStorage.setItem('selected',null);
+                } catch (e) {
+                    console.log(e);
+                }
+            }else{
+                sessionStorage.setItem('redirect','true');
+            }
         } catch (e) {
             console.log(e);
         }
+
 
         this.setState({isLoading: false});
     }
     async componentWillMount(){
         this.setState({isLoading: true});
         sessionStorage.setItem('staff_id','');
+        sessionStorage.setItem('redirect','');
         if(localStorage.getItem('CourseToLoad') === ''){
             this.setState({redirect:true});
         }else{
@@ -96,7 +127,7 @@ class CourseList extends React.Component {
         this.selectedCourses = new Set();
         this.selectedCoursesId = new Set();
 
-        await fetch(`/api/deleteMinimumWarning`, {
+        const response_check = await fetch(`/api/check_warning`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
@@ -109,41 +140,68 @@ class CourseList extends React.Component {
         }).catch((err) => {
             console.log(err.message);
         });
-        const response3 = await fetch(`/api/course_to_load`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            method:"post",
-            body:localStorage.getItem('CourseToLoad')
-        }).catch((err) => {
-            console.log(err.message);
-        });
 
         try {
-            const data = await response3.json();
-            this.setState({CoursesAvail:data});
+            const data_chk = await response_check.json();
+            if(!data_chk.length){
+                await fetch(`/api/deleteMinimumWarning`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    method:"post",
+                    body:JSON.stringify({
+                        grp_name:JSON.parse(localStorage.getItem('CourseToLoad')).grp_name,
+                        username:sessionStorage.getItem("user")
+                    })
+                }).catch((err) => {
+                    console.log(err.message);
+                });
+
+                const response3 = await fetch(`/api/course_to_load`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    method:"post",
+                    body:localStorage.getItem('CourseToLoad')
+                }).catch((err) => {
+                    console.log(err.message);
+                });
+
+                try {
+                    const data = await response3.json();
+                    this.setState({CoursesAvail:data});
+                } catch (e) {
+                    console.log("FAILED");
+                }
+                const response = await fetch(`/api/course_to_load_other`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    method:"post",
+                    body:localStorage.getItem('CourseToLoad')
+                }).catch((err) => {
+                    console.log(err.message);
+                });
+
+                try {
+                    const data = await response.json();
+                    this.setState({CoursesAvailOther:data});
+                } catch (e) {
+                    console.log("FAILED");
+                }
+                this.setState({isLoading: false});
+            }else{
+                this.setState({redirect:true});
+            }
+
         } catch (e) {
             console.log("FAILED");
         }
-        const response = await fetch(`/api/course_to_load_other`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            method:"post",
-            body:localStorage.getItem('CourseToLoad')
-        }).catch((err) => {
-            console.log(err.message);
-        });
 
-        try {
-            const data = await response.json();
-            this.setState({CoursesAvailOther:data});
-        } catch (e) {
-            console.log("FAILED");
-        }
-        this.setState({isLoading: false});
+
     }
     render() {
         const {isLoading,selected,CoursesAvail,CoursesAvailOther,redirect,data,selectedId} = this.state;

@@ -28,8 +28,8 @@ class TimingTable extends React.Component {
                                 <td>{timings.dep_name}</td>
                                 <td>{timings.sem}</td>
                                 <td>{timings.elect}</td>
-                                <td>{timings.start_date.substring(0,10)}</td>
-                                <td>{timings.end_date.substring(0,10)}</td>
+                                <td>{timings.start_date.substring(0,16).replace("T"," ")}</td>
+                                <td>{timings.end_date.substring(0,16).replace("T"," ")}</td>
                             </tr>)
                     }))}
                     </tbody>

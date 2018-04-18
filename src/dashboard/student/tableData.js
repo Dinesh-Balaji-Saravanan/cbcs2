@@ -27,7 +27,7 @@ class TableData extends React.Component {
 
             try {
                 const data = await response.json();
-                if (data.length === 1) {
+                if (data.length >= 1) {
                     this.setState({status: "success"});
                     this.setState({text: "Enrolled"});
                     sessionStorage.setItem('status', 'Enrolled');
@@ -47,7 +47,7 @@ class TableData extends React.Component {
         const {data,isLoading} = this.props;
         return (
             <tr align="center">
-                <td><h5><em>{data.grp_name}</em></h5></td>
+                <td><h6><em>{data.grp_name}</em></h6></td>
                 {isLoading ?
                 <div className={'row justify-content-md-center'}>
                     <div className={"col"} align="center">

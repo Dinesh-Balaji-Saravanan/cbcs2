@@ -113,17 +113,16 @@ class ModalContent extends React.Component {
 
     async componentWillMount(){
         sessionStorage.setItem('staff_id','');
-        const interval = setInterval(()=>{
-            if (localStorage.getItem('selected') !== null) {
-                this.setState({course_id: JSON.parse(localStorage.getItem('selected'))});
-                this.myCall(this.state.course_id);
-            }
-        }, 2000);
-
-        if (localStorage.getItem('selected') === null) {
-            clearInterval(interval);
+        if (localStorage.getItem('selected') !== null) {
+            this.setState({course_id: JSON.parse(localStorage.getItem('selected'))});
+            this.myCall(this.state.course_id);
         }
-
+        // const interval = setInterval(()=>{
+        // }, 2000);
+        //
+        // if (localStorage.getItem('selected') === null) {
+        //     clearInterval(interval);
+        // }
 
         // if (this.props.selected.length !== 0) {
         //     this.myCall();
@@ -142,7 +141,7 @@ class ModalContent extends React.Component {
                     <h5 className="modal-title" id="exampleModalLabel">Are You Sure</h5>
                 </div>
                 <div className="modal-body">
-                    <div id={'padding-all'} className={"col"}>
+                    <div className={"col"}>
                         <div  className="card">
                             <div className="card-body">
                                 <div className={"row justify-content-center"}>
@@ -204,7 +203,7 @@ class ModalContent extends React.Component {
                                         <hr/>
                                         {this.state.min > this.state.enrolled && <div align="center"><h5 className={"text-warning"}>NOTE: This course did not reaches its minimum eligiblity. <br/> You will be in Waiting List</h5></div>}
                                         {
-                                            (this.state.enrolled === this.state.max && this.state.course_name !== "") &&
+                                            (this.state.enrolled >= this.state.max && this.state.course_name !== "") &&
                                                 <div align="center" className={'text-danger'}>
                                                     <h4>Ooops !!</h4>
                                                     <h5>This course is gone. Your friends have filled the seats !! Choose any other course</h5>
@@ -218,7 +217,7 @@ class ModalContent extends React.Component {
                 </div>
                 <div className="modal-footer">
                     <button type="button" onClick={this.props.onSetNull}  className="btn btn-danger" data-dismiss="modal">Cancel</button>
-                    { ((sessionStorage.getItem('staff_id') !=='' && this.state.enrolled === this.state.max) || this.state.course_name === "") ?
+                    { ((sessionStorage.getItem('staff_id') !=='' && this.state.enrolled >= this.state.max) || this.state.course_name === "") ?
                         <button type="submit" onClick={this.props.onDoneIt} data-dismiss="modal"  className="btn btn-success" disabled>Confirm</button>
                         :
                         <button type="submit" onClick={this.props.onDoneIt} data-dismiss="modal"  className="btn btn-success">Confirm</button>

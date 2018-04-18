@@ -50,7 +50,6 @@ class CombineCourses extends React.Component {
         if (this.state.sem_input.length !== 0 && this.state.comb_name.length !== 0 && Array.from(this.selectedCheckboxes).length !== 0 && Array.from(this.selectedCheckboxes1).length !== 0) {
 
             this.myCall('insert_combination');
-            window.location.reload();
         } else {
             this.setState({
                 errors:{
@@ -66,10 +65,8 @@ class CombineCourses extends React.Component {
         e.preventDefault();
         if(e.target.name === 'update'){
             this.myCall2(e.target.name);
-            window.location.reload();
         }else if(e.target.name === 'delete'){
             this.myCall2(e.target.name);
-            window.location.reload();
         }else if(e.target.name === 'ok'){
             this.myCall2(e.target.name);
         }
@@ -95,23 +92,9 @@ class CombineCourses extends React.Component {
             try {
                 await response.json();
                 this.setState({isLoading: false});
+                window.location.reload();
             } catch (e) {
                 this.setState({isLoading: false});
-                console.log("FAILED");
-            }
-            const response2 = await fetch(`/api/all_combinations`, {
-                headers : {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                }
-            }).catch( (err) =>{
-                console.log(err.message);
-            });
-
-            try {
-                const data = await response2.json();
-                this.setState({combinations:data});
-            } catch (e) {
                 console.log("FAILED");
             }
 
@@ -131,23 +114,9 @@ class CombineCourses extends React.Component {
             try {
                 await response.json();
                 this.setState({isLoading: false});
+                window.location.reload();
             } catch (e) {
                 this.setState({isLoading: false});
-                console.log("FAILED");
-            }
-            const response2 = await fetch(`/api/all_combinations`, {
-                headers : {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                }
-            }).catch( (err) =>{
-                console.log(err.message);
-            });
-
-            try {
-                const data = await response2.json();
-                this.setState({combinations:data});
-            } catch (e) {
                 console.log("FAILED");
             }
 
@@ -311,27 +280,8 @@ class CombineCourses extends React.Component {
                         icon:faExclamationTriangle
                     }
                 });
-                if(response.status === 200){
-                    const response2 = await fetch(`/api/all_combinations`, {
-                        headers : {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                        }
-                    }).catch( (err) =>{
-                        console.log(err.message);
-                    });
-
-                    try {
-                        const data = await response2.json();
-                        localStorage.setItem('combinations',JSON.stringify(data));
-                        this.setState({combinations:JSON.parse(localStorage.getItem('combinations'))});
-                        this.setState({isLoading:false});
-                    } catch (e) {
-                        this.setState({isLoading:false});
-                        console.log("FAILED");
-                    }
-                }
                 this.setState({isLoading:false});
+                window.location.reload();
             } catch (e) {
                 this.setState({isLoading:false});
                 console.log("FAILED");

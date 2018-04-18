@@ -36,7 +36,7 @@ class Timings extends React.Component {
     };
     onSubmit = (e) => {
         e.preventDefault();
-        this.myCall('nothing','check_timing');
+        this.myCall('nothing','CheckTiming');
     };
     onSubmit2 = (e) => {
         e.preventDefault();
@@ -356,21 +356,21 @@ class Timings extends React.Component {
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div className={"col-3"}>
+                                            <div className={"col-4"}>
                                                 <div className="input-group mb-3">
                                                     <div className="input-group-prepend">
                                                         <label className="input-group-text" ><FontAwesomeIcon icon={faHourglassStart}/></label>
                                                     </div>
-                                                    <input type="date" name="start" onChange={this.onChange} className="form-control" placeholder="Start Time"/>
+                                                    <input type={"datetime-local"} name="start" onChange={this.onChange} className="form-control" placeholder="Start Time"/>
                                                 </div>
                                             </div>
 
-                                            <div className={"col-3"}>
+                                            <div className={"col-4"}>
                                                 <div className="input-group mb-3">
                                                     <div className="input-group-prepend">
                                                         <label className="input-group-text" ><FontAwesomeIcon icon={faHourglassEnd}/></label>
                                                     </div>
-                                                    <input type="date" name="end" onChange={this.onChange} className="form-control" placeholder="End Time"/>
+                                                    <input type="datetime-local" name="end" onChange={this.onChange} className="form-control" placeholder="End Time"/>
                                                 </div>
                                             </div>
                                             <div className={"col-2 mb-3"}>
@@ -390,13 +390,13 @@ class Timings extends React.Component {
                                                     <div className="input-group-prepend">
                                                         <label className="input-group-text" ><FontAwesomeIcon icon={faHourglassStart}/></label>
                                                     </div>
-                                                    <input type="date" name="start_date" onChange={this.onChange} className="form-control" placeholder="Start Time"/>
+                                                    <input type="datetime-local" name="start_date" onChange={this.onChange} className="form-control" placeholder="Start Time"/>
                                                 </div>
                                                 <div className="input-group mb-3">
                                                     <div className="input-group-prepend">
                                                         <label className="input-group-text" ><FontAwesomeIcon icon={faHourglassEnd}/></label>
                                                     </div>
-                                                    <input type="date" name="end_date" onChange={this.onChange} className="form-control" placeholder="End Time"/>
+                                                    <input type="datetime-local" name="end_date" onChange={this.onChange} className="form-control" placeholder="End Time"/>
                                                 </div>
                                                 <div className="row justify-content-md-center">
                                                     <div className={"col-6"}>

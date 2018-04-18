@@ -10,15 +10,6 @@ app.use(express.static(path.join(__dirname, 'build')));
 
 let httpServer = http.createServer(app);
 
-// app.get("/api/*",function (req, res) {
-//
-// });
-//
-// if(!app.get("/api/*") && !app.post("/api/*")){
-//
-// }
-
-
 // Setting Base directory
 app.use(bodyParser.json());
 //CORS Middleware
@@ -62,13 +53,6 @@ const executeQuery = async function(res, query){
             res.status(500).send({ message: `${err}`});
             sql.close();
         });
-        //
-        // let pool = await sql.connect(config);
-        // let result1 = await pool.request()
-        //     .query(query);
-        // pool.close();
-        // sql.close();
-        // res.send(result1.recordset);
     }catch (e){
         console.log(e);
     }
@@ -91,14 +75,14 @@ app.get("/api/department", function(req , res){
         "      ,[dep_shrt]\n" +
         "  FROM [elect].[dbo].[department]";
     executeQuery (res, query);
-});
-app.get("/api/timings", function(req , res){
+});app.get("/api/timings", function(req , res){
     const query = "select t.sem,t.start_date,t.elect,t.end_date, dp.dep_name, dp.dep_id ,t.timing_id from elect.dbo.timing as t, elect.dbo.department as dp where dp.dep_id = t.dep_id";
     executeQuery (res, query);
 });
 
 app.post("/api/check_timing", function(req , res){
-    const query = "select * from elect.dbo.timing WHERE sem='"+req.body.sem+"' and dep_id = '"+req.body.dep_id+"'";
+    const query = "select * from elect.dbo.timing WHERE sem='"+req.body.sem+"' and dep_id = '"+req.body.dep_id+"'  " +
+        "and start_date <= getdate() and end_date >= getdate()";
     //const res1 = executeQuery_Check(res, query);
     console.log(query);
     executeQuery(res, query);
@@ -106,31 +90,22 @@ app.post("/api/check_timing", function(req , res){
 });
 //Changes
 app.post("/api/insert_timing", function(req , res){
+    console.log(req.body);
     const query_insert = "insert into elect.dbo.timing (sem,dep_id,elect,start_date,end_date) values " +
         "('"+req.body.sem+"'," +
         "'"+req.body.dep_id+"'," +
         "'"+req.body.elect+"'," +
-        "'"+req.body.start+"'," +
-        "'"+req.body.end+"')";
+        "'"+req.body.start.replace("T"," ")+"'," +
+        "'"+req.body.end.replace("T"," ")+"')";
     console.log(query_insert);
     executeQuery(res,query_insert)
 });
 
-app.put("/api/update_timing", function(req , res){
-    const query_update = "update elect.dbo.timing set start_date = '"+req.body.start+"',end_date = '"+req.body.end+"' where sem = '"+req.body.sem+"' and dep_id = '"+req.body.dep_id+"'";
-    console.log(query_update);
-    executeQuery(res,query_update)
 
-});
-app.put("/api/update_timing", function(req , res){
-    const query_update = "update elect.dbo.timing set start_date = '"+req.body.start+"',end_date = '"+req.body.end+"' where timing_id '"+req.body.timing_id+"'";
-    console.log(query_update);
-    executeQuery(res,query_update)
-
-});
 app.put("/api/timings_update", function(req , res){
     const timing_id = req.body.timing_id.join();
-    const query_update = "update elect.dbo.timing set start_date = '"+req.body.start_date+"',end_date = '"+req.body.end_date+"' where timing_id in ("+timing_id+")";
+    const query_update = "update elect.dbo.timing set start_date = '"+req.body.start_date.replace("T"," ")+"'," +
+        "end_date = '"+req.body.end_date.replace("T"," ")+"' where timing_id in ("+timing_id+")";
     console.log(query_update);
     executeQuery(res,query_update)
 
@@ -159,7 +134,69 @@ app.post("/api/user/uname", function(req , res){
     executeQuery (res, query);
 });
 
+app.post("/api/export_without", function(req , res){
+    if (req.body.course_id || req.body.course_id !== '') {
+        if (req.body.sec || req.body.sec !== '') {
+            const query = "select u.username as \"Reg. No.\",sd.stud_name as \"Student name\",sd.sec as \"Section\",\n" +
+                "dd.dep_name as \"Student Department\",c.course_code as \"Course Code\"\n" +
+                ",c.course_name as \"Course Name\",d.dep_name as \"Course Department\"\n" +
+                " from\n" +
+                "elect.dbo.[course_choose] as cc,\n" +
+                "elect.dbo.department as d,\n" +
+                "elect.dbo.department as dd,\n" +
+                "elect.dbo.course as c,\n" +
+                "elect.dbo.user_details as u,\n" +
+                "elect.dbo.student as sd\n" +
+                "where\n" +
+                "c.course_id = cc.course_id and d.dep_id = cc.dep_id and dd.dep_id = u.dep_id and\n" +
+                "cc.course_id = '" + req.body.course_id + "' and\n" +
+                "u.username = cc.username and\n" +
+                "sd.sec = '" + req.body.sec + "' and \n" +
+                "sd.uid = u.uid  order by SUBSTRING(u.username,6, 8)";
+            console.log(query);
+            executeQuery(res, query);
+        }else{
+            const query = "select u.username as \"Reg. No.\",sd.stud_name as \"Student name\",sd.sec as \"Section\",\n" +
+                "dd.dep_name as \"Student Department\",c.course_code as \"Course Code\"\n" +
+                ",c.course_name as \"Course Name\",d.dep_name as \"Course Department\"\n" +
+                " from\n" +
+                "elect.dbo.[course_choose] as cc,\n" +
+                "elect.dbo.department as d,\n" +
+                "elect.dbo.department as dd,\n" +
+                "elect.dbo.course as c,\n" +
+                "elect.dbo.user_details as u,\n" +
+                "elect.dbo.student as sd\n" +
+                "where\n" +
+                "c.course_id = cc.course_id and d.dep_id = cc.dep_id and dd.dep_id = u.dep_id and\n" +
+                "cc.course_id = '" + req.body.course_id + "' and\n" +
+                "u.username = cc.username and\n" +
+                "sd.uid = u.uid  order by SUBSTRING(u.username,6, 8)";
+            console.log(query);
+            executeQuery(res, query);
+        }
+    } else {
+        const query = " select u.username as \"Reg. No.\",sd.stud_name as \"Student name\",sd.sec as \"Section\"," +
+            "dd.dep_name as \"Student Department\",c.course_code as \"Course Code\",c.course_name as \"Course Name\",d.dep_name as \"Course Department\" \n" +
+            " from \n" +
+            "elect.dbo.[course_choose] as cc,\n" +
+            "elect.dbo.department as d,\n" +
+            "elect.dbo.department as dd,\n" +
+            "elect.dbo.course as c,\n" +
+            "elect.dbo.user_details as u,\n" +
+            "elect.dbo.student as sd\n" +
+            "where \n" +
+            "c.course_id = cc.course_id and d.dep_id = cc.dep_id and dd.dep_id = u.dep_id and\n" +
+            "cc.dep_id = '"+ req.body.dep_id +"' and \n" +
+            "c.sem = '"+ req.body.sem +"' and c.elect_id = "+ req.body.elect +" and\n" +
+            "sd.sec = '"+ req.body.sec +"' and \n" +
+            "u.username = cc.username and \n" +
+            "sd.uid = u.uid  order by SUBSTRING(u.username,6, 8)";
+        console.log(query);
+        executeQuery(res, query);
+    }
+});
 app.post("/api/export", function(req , res){
+
     if (!req.body.course_id || req.body.course_id === '') {
         const query = " select u.username as \"Reg. No.\",sd.stud_name as \"Student name\",sd.sec as \"Section\",c.course_code as \"Course Code\",c.course_name as \"Course Name\",d.dep_name as Department,staff.staff_name as \"Staff Name\" \n" +
             " from \n" +
@@ -174,29 +211,48 @@ app.post("/api/export", function(req , res){
             "staff.staff_id = cc.staff_id and \n" +
             "d.dep_id = '" + req.body.dep_id + "' and \n" +
             "c.sem = '" + req.body.sem + "' and \n" +
+            "sd.sec = '" + req.body.sec + "' and \n" +
             "u.username = cc.username and \n" +
-            "sd.uid = u.uid";
+            "sd.uid = u.uid  order by SUBSTRING(u.username,6, 8)";
         console.log(query);
         executeQuery(res, query);
-    } else {
-        //Need to Be Changed
-        const query = "select u.username as \"Reg. No.\",sd.stud_name as \"Student name\",sd.sec as \"Section\",c.course_code as \"Course Code\",c.course_name as \"Course Name\",d.dep_name as Department,staff.staff_name as \"Staff Name\" \n" +
-            " from \n" +
-            "elect.dbo.[course_choose] as cc,\n" +
-            "elect.dbo.department as d,\n" +
-            "elect.dbo.course as c,\n" +
-            "elect.dbo.staff_details as staff,\n" +
-            "elect.dbo.user_details as u,\n" +
-            "elect.dbo.student as sd\n" +
-            "where \n" +
-            "c.course_id = cc.course_id and \n" +
-            "staff.staff_id = cc.staff_id and \n" +
-            "c.course_id = cc.course_id and \n" +
-            "cc.course_id = '"+ req.body.course_id +"' and\n" +
-            "u.username = cc.username and \n" +
-            "sd.uid = u.uid";
-        console.log(query);
-        executeQuery(res, query);
+    }else {
+        if (req.body.sec || req.body.sec !== '') {
+            const query = "select u.username as \"Reg. No.\",sd.stud_name as \"Student name\",sd.sec as \"Section\",c.course_code as \"Course Code\",c.course_name as \"Course Name\",d.dep_name as Department,staff.staff_name as \"Staff Name\" \n" +
+                " from \n" +
+                "elect.dbo.[course_choose] as cc,\n" +
+                "elect.dbo.department as d,\n" +
+                "elect.dbo.course as c,\n" +
+                "elect.dbo.staff_details as staff,\n" +
+                "elect.dbo.user_details as u,\n" +
+                "elect.dbo.student as sd\n" +
+                "where \n" +
+                "c.course_id = cc.course_id and d.dep_id = cc.dep_id and\n" +
+                "staff.staff_id = cc.staff_id and\n" +
+                "cc.course_id = '" + req.body.course_id + "' and\n" +
+                "u.username = cc.username and\n" +
+                "sd.sec = '" + req.body.sec + "' and \n" +
+                "sd.uid = u.uid  order by SUBSTRING(u.username,6, 8)";
+            console.log(query);
+            executeQuery(res, query);
+        } else {
+            const query = "select u.username as \"Reg. No.\",sd.stud_name as \"Student name\",sd.sec as \"Section\",c.course_code as \"Course Code\",c.course_name as \"Course Name\",d.dep_name as Department,staff.staff_name as \"Staff Name\" \n" +
+                " from \n" +
+                "elect.dbo.[course_choose] as cc,\n" +
+                "elect.dbo.department as d,\n" +
+                "elect.dbo.course as c,\n" +
+                "elect.dbo.staff_details as staff,\n" +
+                "elect.dbo.user_details as u,\n" +
+                "elect.dbo.student as sd\n" +
+                "where \n" +
+                "c.course_id = cc.course_id and d.dep_id = cc.dep_id and\n" +
+                "staff.staff_id = cc.staff_id and\n" +
+                "cc.course_id = '" + req.body.course_id + "' and\n" +
+                "u.username = cc.username and\n" +
+                "sd.uid = u.uid  order by SUBSTRING(u.username,6, 8)";
+            console.log(query);
+            executeQuery(res, query);
+        }
     }
 });
 app.post("/api/courses_list", function(req , res){
@@ -276,6 +332,11 @@ app.post("/api/course_enrolment_count", function(req , res) {
     executeQuery(res, query);
 });
 
+app.post("/api/StudCount", function(req , res){
+    const query = "SELECT count(*) as cnt from elect.dbo.student as s , elect.dbo.user_details as ud where s.uid = ud.uid and ud.dep_id = '"+req.body.dep_id+"' and s.sem = '"+req.body.sem+"'";
+    console.log(query);
+    executeQuery (res, query);
+});
 
 app.post("/api/everyThings_done", function(req , res){
     console.log(JSON.stringify(req.body));
@@ -313,6 +374,22 @@ app.post("/api/enrolledForSameCourse", function(req , res){
 });
 app.post("/api/deleteMinimum", function(req , res){
     const query = "delete FROM [elect].[dbo].[course_choose] WHERE choose_id = '" + req.body.choose_id+"'";
+    console.log(query);
+    executeQuery (res, query);
+});
+app.post("/api/check_warning", function(req , res){
+    const query = "select course_id from elect.dbo.course where min_lim <= (SELECT count(*)\n" +
+        "  FROM [elect].[dbo].[course_choose] where grp_name = '"+ req.body.grp_name+"' ) and course_id = (SELECT course_id\n" +
+        "  FROM [elect].[dbo].[course_choose] where grp_name = '"+ req.body.grp_name+"' and username = '"+ req.body.username+"' )";
+    console.log(query);
+    executeQuery (res, query);
+});
+app.post("/api/check_maximum", function(req , res){
+    const query = "select course_id from elect.dbo.course where max_lim > (\n" +
+        "SELECT count(*)\n" +
+        "  FROM [elect].[dbo].[course_choose] \n" +
+        "  where grp_name = '"+ req.body.grp_name+"'  and course_id = "+ req.body.course_id+" and dep_id = "+ req.body.dep_id+" )\n" +
+        "   and course_id = "+ req.body.course_id+"";
     console.log(query);
     executeQuery (res, query);
 });

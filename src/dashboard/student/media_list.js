@@ -82,11 +82,11 @@ class MediaListCourse extends React.Component {
                                 </div>
                                 <div className="col-2" style={{paddingTop:'4px',paddingLeft:'0px',paddingBottom:'0px'}}>{courses.max_lim}</div>
 
-                            </div>{this.state.enrolled === courses.max_lim && <small  className={'text-danger'}>Seats are Filled !!</small>}
+                            </div>{this.state.enrolled >= courses.max_lim && <small  className={'text-danger'}>Seats are Filled !!</small>}
                             <hr/>
                         </div>
                         <div className={"col-12"}>
-                            {this.state.enrolled === courses.max_lim ? <button onClick={this.props.onUserInputChange}
+                            {this.state.enrolled >= courses.max_lim ? <button onClick={this.props.onUserInputChange}
                                     name={courses.course_id}
                                      value={courses.course_code+"\n"+courses.course_name}
                                      className={"btn btn-block btn-primary btn-block"} disabled>

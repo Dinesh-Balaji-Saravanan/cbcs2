@@ -30,7 +30,7 @@ class ListGroup extends React.Component {
     }
     render() {
         const { isLoading } = this.state;
-        if(sessionStorage.getItem('user') === ""){
+        if(sessionStorage.getItem('user') === "" || sessionStorage.getItem('user') ===null){
             return( <Redirect push to={'/'} /> );
         }
         return (

@@ -1,9 +1,9 @@
 import React from 'react';
 import FontAwesomeIcon from "@fortawesome/react-fontawesome";
 import {
-    faInfoCircle
+    faInfoCircle, faPlusCircle,
 } from "@fortawesome/fontawesome-free-solid/index.es";
-import "../../css/main.css";
+import "../../css/main.css"
 class MediaListCourse extends React.Component {
 
     state = {
@@ -14,7 +14,8 @@ class MediaListCourse extends React.Component {
         redirect:false,
         errors:{},
         enrolled:"",
-        enrolled_percent:""
+        enrolled_percent:"",
+        min_enrolled_percent:""
     };
 
     async componentWillMount(){
@@ -42,13 +43,18 @@ class MediaListCourse extends React.Component {
         const max = this.props.courses.max_lim;
         const val = ((input - min) * 100) / (max - min);
         if (val) {
-            this.setState({enrolled_percent:val})
+            this.setState({enrolled_percent:val});
+            const input = this.props.courses.min_lim;
+            const min = 0;
+            const max = this.props.courses.max_lim;
+            const minimum = ((input - min) * 100) / (max - min);
+            this.setState({min_enrolled_percent:minimum});
         }
     }
 
     render() {
         const {courses} = this.props;
-        return <div id={'padding-all'} className={"col-4"}>
+        return <div id={'padding-all'} className={"col-lg-4 col-md-12"}>
             <div id={'card3'} className="card">
                 <div className="card-body">
                     <div className={"row"}>
@@ -59,7 +65,7 @@ class MediaListCourse extends React.Component {
                                 <div className="col-1"><FontAwesomeIcon icon={faInfoCircle}/></div>
                                 <div className={"col-10"}>
                                     <h5> Course Code: {courses.course_code}</h5>
-                                Prerequisites: <small className={"text-danger"}>{courses.prereq || 'Not Given'}</small><br/>
+                                    Prerequisites: <small className={"text-danger"}>{courses.prereq || 'Not Given'}</small><br/>
                                     <div className={"row"}>
                                         <div className={"col-9"}>Minimum Eligibility:</div>
                                         <div className={"col-3"}><p className={"text-danger"}>{courses.min_lim}</p></div>
@@ -71,12 +77,12 @@ class MediaListCourse extends React.Component {
                                 <div className="col-4" style={{paddingTop:'4px',paddingBottom:'0px',paddingRight:'0px'}}>Enrolled: {this.state.enrolled}</div>
                                 <div className={"col-6"} style={{paddingTop:'7px',paddingLeft:'0px',paddingBottom:'0px',paddingRight:'3px'}}>
                                     <div className="progress" >
-                                        <div className="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style={{ width: `${this.state.enrolled_percent}%` }} aria-valuenow={this.state.enrolled_percent} aria-valuemin="0" aria-valuemax={courses.max_lim}> </div>
+                                        <div className={`progress-bar bg-${this.props.courses.min_lim <= this.state.enrolled ? 'success' : 'warning' } progress-bar-striped progress-bar-animated`} role="progressbar" style={{ width: `${this.state.enrolled_percent}%` }} aria-valuenow={this.state.enrolled} aria-valuemin="0" aria-valuemax={courses.max_lim}> </div>
                                     </div>
                                 </div>
                                 <div className="col-2" style={{paddingTop:'4px',paddingLeft:'0px',paddingBottom:'0px'}}>{courses.max_lim}</div>
 
-                            </div>{this.state.enrolled === courses.max_lim && <small  className={'text-danger'}>Seats are Filled !!</small>}
+                            </div>{this.state.enrolled >= courses.max_lim && <small  className={'text-danger'}>Seats are Filled !!</small>}
                         </div>
                     </div>
                 </div>
