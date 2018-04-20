@@ -66,12 +66,9 @@ class AddStaff extends React.Component {
             this.myCall(e.target.name);
         }else if(e.target.name ==='deleteStaff'){
             this.myCall(e.target.name);
-        }else if(e.target.name ==='deleteStaff'){
-            this.myCall(e.target.name);
         }
         this.checkBoxes.clear();
         this.checkBoxes2.clear();
-        window.location.reload();
     };
 
     onClick2 = e =>{
@@ -268,6 +265,7 @@ class AddStaff extends React.Component {
                     }
                 });
                 this.setState({isLoading: false});
+                window.location.reload();
             } catch (e) {
                 this.setState({
                     errors:{
@@ -307,7 +305,7 @@ class AddStaff extends React.Component {
                     }
                 });
                 this.setState({isLoading: false});
-                this.setState({staffsAssigned:[]});
+                window.location.reload();
             } catch (e) {
                 this.setState({
                     errors:{
@@ -347,21 +345,7 @@ class AddStaff extends React.Component {
                     }
                 });
                 this.setState({isLoading: false});
-                const response2 = await fetch(`/api/staffs`, {
-                    headers : {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    }
-                }).catch( (err) =>{
-                    console.log(err.message);
-                });
-
-                try {
-                    const data = await response2.json();
-                    this.setState({staffsAll:data});
-                } catch (e) {
-                    console.log("FAILED");
-                }
+                window.location.reload();
             } catch (e) {
                 this.setState({
                     errors:{

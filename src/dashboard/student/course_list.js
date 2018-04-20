@@ -117,7 +117,6 @@ class CourseList extends React.Component {
     }
     async componentWillMount(){
         this.setState({isLoading: true});
-        sessionStorage.setItem('staff_id','');
         sessionStorage.setItem('redirect','');
         if(localStorage.getItem('CourseToLoad') === ''){
             this.setState({redirect:true});

@@ -8,6 +8,7 @@ class ModalContent extends React.Component {
     min_enrolled_percent:"",
     course_id:this.props.selected[0],
     course_dets:[],staffEnroll:"",
+        staff_name:"",
     course_name:"",
     course_code:"",
     min:"", max:"", enrolled:"",
@@ -32,7 +33,8 @@ class ModalContent extends React.Component {
             const data = await response.json();
             this.setState({course_dets:data});
             if(data.length === 1){
-                sessionStorage.setItem('staff_id',data[0].staff_id)
+                sessionStorage.setItem('staff_id',data[0].staff_id);
+                this.setState({staff_name:data[0].staff_id});
             }
         } catch (e) {
             console.log("FAILED");
@@ -131,6 +133,7 @@ class ModalContent extends React.Component {
 
     onChange = (e) =>{
         sessionStorage.setItem('staff_id',e.target.value);
+        this.setState({staff_name:e.target.value});
     };
 
     render() {
@@ -217,10 +220,14 @@ class ModalContent extends React.Component {
                 </div>
                 <div className="modal-footer">
                     <button type="button" onClick={this.props.onSetNull}  className="btn btn-danger" data-dismiss="modal">Cancel</button>
-                    { ((sessionStorage.getItem('staff_id') !=='' && this.state.enrolled >= this.state.max) || this.state.course_name === "") ?
-                        <button type="submit" onClick={this.props.onDoneIt} data-dismiss="modal"  className="btn btn-success" disabled>Confirm</button>
+                    { ((this.state.enrolled <= this.state.max) && this.state.course_name === "") ?
+                        <button type="submit" onClick={this.props.onDoneIt} className="btn btn-success" disabled>Confirm</button>
                         :
-                        <button type="submit" onClick={this.props.onDoneIt} data-dismiss="modal"  className="btn btn-success">Confirm</button>
+                        <p> {this.state.staff_name === "" ?
+                            <button type="submit" onClick={this.props.onDoneIt} data-dismiss="modal"  className="btn btn-success" disabled>Confirm</button> :
+                            <button type="submit" onClick={this.props.onDoneIt} data-dismiss="modal"  className="btn btn-success" >Confirm</button>
+                        }</p>
+
                     }
                 </div>
             </div>

@@ -253,7 +253,7 @@ class DashContStud extends React.Component {
             <p>{isLoading && <Loader/>}
                 {errors.title !== "" && <AlertNotify icon={errors.icon} title={errors.title} type={errors.type} message={errors.message} />}
                 {sessionStorage.getItem('redirect') === "true" && <AlertNotify icon={faExclamationTriangle} title={'Sorry !'} type={'danger'} message={'That course has been taken. Please Choose other course'} />}
-                {this.state.isEnrolledCnt !==0 && total_groups !==0 &&<div className={'row justify-content-md-center'}>
+                {this.state.isEnrolledCnt !==0 !==0 &&<div className={'row justify-content-md-center'}>
                     <div className={"col"} align="center">
                         {this.state.chosenCourse.map((data =>{
                             return(
