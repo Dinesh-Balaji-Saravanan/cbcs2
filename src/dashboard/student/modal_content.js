@@ -35,6 +35,8 @@ class ModalContent extends React.Component {
             if(data.length === 1){
                 sessionStorage.setItem('staff_id',data[0].staff_id);
                 this.setState({staff_name:data[0].staff_id});
+            }else if(data.length === 0){
+                this.setState({staff_name:"noStaff"});
             }
         } catch (e) {
             console.log("FAILED");
